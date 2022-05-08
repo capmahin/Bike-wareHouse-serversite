@@ -108,6 +108,10 @@ app.get("/", (req, res) => {
   res.send("running bike server");
 });
 
+app.get("/hero", (req, res) => {
+  res.send("hero ku");
+});
+
 app.listen(port, () => {
   console.log("Listening to port", port);
 });
