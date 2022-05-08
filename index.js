@@ -24,9 +24,8 @@ function verifyJWT(req, res, next) {
     }
     console.log("decoded", decoded);
     req.decoded = decoded;
+    next();
   });
-
-  next();
 }
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.x06cz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
@@ -85,11 +84,14 @@ async function run() {
     app.get("/order", verifyJWT, async (req, res) => {
       const decodedEmail = req.decoded.email;
       const email = req.query.email;
-      console.log(email);
-      const query = { email: email };
-      const cursor = orderCollection.find(query);
-      const orders = await cursor.toArray();
-      res.send(orders);
+      if (email === decodedEmail) {
+        const query = { email: email };
+        const cursor = orderCollection.find(query);
+        const orders = await cursor.toArray();
+        res.send(orders);
+      } else {
+        res.status(403).send({ message: "forbidden access" });
+      }
     });
 
     app.post("/order", async (req, res) => {
